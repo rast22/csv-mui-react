@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Vehicle } from '../types/vehicle';
 
-const API_URL = 'http://localhost:3001'; // You'll need to set up a backend server
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000'; // You'll need to set up a backend server
 
 export const vehicleApi = {
   getVehicles: async (): Promise<Vehicle[]> => {

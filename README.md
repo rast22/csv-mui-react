@@ -1,46 +1,118 @@
-# Getting Started with Create React App
+# Vehicle Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack application for managing vehicles, built with React, NestJS, and PostgreSQL.
 
-## Available Scripts
+## 🚀 Quick Start with Docker Compose
 
-In the project directory, you can run:
+### Prerequisites
 
-### `npm start`
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Running the Application
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd csv-mui-react-assighment
+```
 
-### `npm test`
+2. Start the application using Docker Compose:
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This command will:
+- Build and start the PostgreSQL database
+- Build and start the NestJS backend
+- Build and start the React frontend
+- Set up all necessary connections between services
 
-### `npm run build`
+3. Access the application:
+- Frontend: http://localhost:3001
+- Backend API: http://localhost:3000
+- Database: localhost:5432
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Stopping the Application
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+To stop all services:
+```bash
+docker-compose -f docker-compose.dev.yml down
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+To stop and remove all containers, networks, and volumes:
+```bash
+docker-compose -f docker-compose.dev.yml down -v
+```
 
-### `npm run eject`
+## 🛠️ Development
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Project Structure
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+.
+├── backend/                 # NestJS backend application
+│   ├── src/                # Source files
+│   ├── prisma/            # Database schema and migrations
+│   └── Dockerfile.dev     # Development Dockerfile for backend
+├── src/                    # React frontend application
+├── Dockerfile.dev         # Development Dockerfile for frontend
+└── docker-compose.dev.yml # Docker Compose configuration
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Available Docker Compose Commands
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+# Start the application in development mode
+npm run docker:dev
 
-## Learn More
+# Stop the application
+npm run docker:dev:down
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# View logs
+docker-compose -f docker-compose.dev.yml logs -f
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# View logs for a specific service
+docker-compose -f docker-compose.dev.yml logs -f frontend
+docker-compose -f docker-compose.dev.yml logs -f backend
+docker-compose -f docker-compose.dev.yml logs -f postgres
+```
+
+### Troubleshooting
+
+1. If the frontend can't connect to the backend:
+   - Ensure all containers are running: `docker ps`
+   - Check backend logs for CORS issues
+   - Verify the API URL in the frontend configuration
+
+2. If the database connection fails:
+   - Ensure the PostgreSQL container is healthy
+   - Check the database credentials in docker-compose.dev.yml
+   - Verify the DATABASE_URL in the backend environment
+
+3. If containers won't stop or remove:
+   - Force remove all containers: `docker rm -f $(docker ps -aq)`
+   - Prune Docker system: `docker system prune -af --volumes`
+
+## 🔧 Running Without Docker
+
+You can also run each service individually:
+
+### Frontend
+
+```bash
+npm install
+npm start
+```
+
+### Backend
+
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+### Database
+
+You'll need to install and configure PostgreSQL locally if not using Docker.

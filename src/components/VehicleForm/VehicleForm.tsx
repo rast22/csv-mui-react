@@ -14,6 +14,7 @@ import {
 import { Vehicle } from '../../types/vehicle';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { AxiosError } from 'axios';
 
 const MANUFACTURERS = [
   'MAN',
@@ -32,6 +33,7 @@ interface VehicleFormProps {
   onSubmit: (data: Partial<Vehicle>) => Promise<void>;
   title: string;
   isLoading?: boolean;
+  error?: string;
 }
 
 export const VehicleForm: React.FC<VehicleFormProps> = ({
@@ -39,12 +41,14 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
   onSubmit,
   title,
   isLoading = false,
+  error,
 }) => {
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
     watch,
   } = useForm<Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>>({
     defaultValues: initialData
@@ -58,6 +62,19 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
   });
 
   const vinValue = watch('vin', '');
+
+  const onSubmitHandler = async (data: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      await onSubmit(data);
+    } catch (err) {
+      if ((err as AxiosError)?.response?.status === 409) {
+        setError('vin', { 
+          type: 'manual',
+          message: 'This VIN is already registered'
+        });
+      }
+    }
+  };
 
   return (
     <Container maxWidth={false} sx={{ py: 3 }}>
@@ -85,7 +102,7 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
           </Typography>
         </Box>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmitHandler)}>
           <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 1, width: '100%', maxWidth: '800px', mb: 3 }}>
             <Box sx={{
               display: 'grid',
@@ -181,6 +198,12 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
               />
             </Box>
           </Paper>
+
+          {error && (
+            <Typography color="error" sx={{ mb: 2 }}>
+              {error}
+            </Typography>
+          )}
 
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
